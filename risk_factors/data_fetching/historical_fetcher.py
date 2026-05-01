@@ -1,4 +1,4 @@
-"""Historical data fetcher - Retrieves 3-4 years of daily data for all risk factors."""
+"""Historical data fetcher for daily risk-factor levels."""
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
@@ -22,26 +22,33 @@ logger = get_logger(__name__)
 class HistoricalDataFetcher:
     """Fetches and manages historical data."""
 
-    def __init__(self, data_dir="data", years=3):
+    def __init__(self, data_dir="data", years=3, start_date=None, end_date=None):
         """
         Initialize historical data fetcher.
-        
+
         Args:
             data_dir: Directory to store data
-            years: Number of years of history to fetch (default 3, can be 1-10+)
+            years: Number of years of history to fetch if start_date is not set
+            start_date: Explicit first date to fetch
+            end_date: Explicit last date to fetch
         """
         self.data_dir = Path(data_dir)
-        self.data_dir.mkdir(exist_ok=True)
-        self.years = min(years, 10)  # Cap at 10 years max
-        self.start_date = (datetime.now() - timedelta(days=365 * self.years)).strftime("%Y-%m-%d")
-        self.end_date = datetime.now().strftime("%Y-%m-%d")
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.years = years
+        self.end_date = pd.to_datetime(end_date or datetime.now()).strftime("%Y-%m-%d")
+        if start_date is None:
+            self.start_date = (
+                pd.to_datetime(self.end_date) - timedelta(days=365 * self.years)
+            ).strftime("%Y-%m-%d")
+        else:
+            self.start_date = pd.to_datetime(start_date).strftime("%Y-%m-%d")
         self.historical_file = self.data_dir / "historical_data.csv"
         self.metadata_file = self.data_dir / "historical_metadata.json"
 
     def fetch_historical_data(self):
-        """Fetch 3-4 years of historical data for all metrics."""
+        """Fetch historical data for all configured metrics."""
         logger.info("=" * 60)
-        logger.info(f"Fetching historical data ({self.years} years)...")
+        logger.info("Fetching historical data...")
         logger.info(f"Period: {self.start_date} to {self.end_date}")
         logger.info("=" * 60)
 

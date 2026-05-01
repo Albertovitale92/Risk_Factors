@@ -121,6 +121,10 @@ def log_returns(
     return _apply_overlap_filter(returns, days, overlapping)
 
 
+abs_return = abs_returns
+log_return = log_returns
+
+
 def cumulative_return(
     prices: pd.Series,
     *,
