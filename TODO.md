@@ -26,6 +26,22 @@ Implement analytics that operate on returns, exposures, or curves.
 - `macaulay_duration(cashflows, yields)`
 - `modified_duration(cashflows, yields)`
 - `key_rate_durations(curve, shocks)`
+- Upgrade `key_rate_durations` from the current curve-shock placeholder to a true price-based key-rate duration once curve building and pricing logic exist. Target API:
+
+```python
+key_rate_durations(
+    instrument_or_portfolio,
+    curve,
+    pricing_function,
+    shock_size=0.0001,
+)
+```
+
+The upgraded function should compute:
+
+```text
+KRD_i = - (P_shocked_i - P_base) / (P_base * shock_i)
+```
 
 ### `risk_factors/risk_metrics/fx_exposure.py`
 
