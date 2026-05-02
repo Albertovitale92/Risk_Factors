@@ -64,3 +64,9 @@ Build yield curves from raw market instruments. Support:
 - bootstrap discount factors
 - bootstrap forward rates
 - bootstrap zero curves
+
+## Review Implemented Modules
+
+- Review and harden the implemented transformations, utility helpers, public API, and local data store.
+- Check edge cases, naming consistency, docstrings, and API ergonomics before treating them as stable.
+- Expand test coverage around real market-data quirks after the core implementation is reviewed.

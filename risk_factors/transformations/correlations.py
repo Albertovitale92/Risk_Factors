@@ -24,6 +24,53 @@ def _validate_return_series(values: pd.Series, name: str) -> pd.Series:
     return pd.to_numeric(values, errors="coerce")
 
 
+def _kendall_tau(x: pd.Series, y: pd.Series) -> float:
+    aligned = pd.concat([x, y], axis=1).dropna()
+    if len(aligned) < 2:
+        return np.nan
+
+    x_values = aligned.iloc[:, 0].to_numpy()
+    y_values = aligned.iloc[:, 1].to_numpy()
+    concordant = 0
+    discordant = 0
+    ties_x = 0
+    ties_y = 0
+
+    for i in range(len(aligned) - 1):
+        for j in range(i + 1, len(aligned)):
+            x_diff = np.sign(x_values[i] - x_values[j])
+            y_diff = np.sign(y_values[i] - y_values[j])
+            if x_diff == 0 and y_diff == 0:
+                continue
+            if x_diff == 0:
+                ties_x += 1
+            elif y_diff == 0:
+                ties_y += 1
+            elif x_diff == y_diff:
+                concordant += 1
+            else:
+                discordant += 1
+
+    denominator = (
+        (concordant + discordant + ties_x)
+        * (concordant + discordant + ties_y)
+    ) ** 0.5
+    if denominator == 0:
+        return np.nan
+    return (concordant - discordant) / denominator
+
+
+def _kendall_correlation_matrix(returns: pd.DataFrame) -> pd.DataFrame:
+    columns = list(returns.columns)
+    matrix = pd.DataFrame(np.eye(len(columns)), index=columns, columns=columns)
+    for left_index, left_column in enumerate(columns):
+        for right_column in columns[left_index + 1 :]:
+            correlation = _kendall_tau(returns[left_column], returns[right_column])
+            matrix.loc[left_column, right_column] = correlation
+            matrix.loc[right_column, left_column] = correlation
+    return matrix
+
+
 def correlation_matrix(
     returns: pd.DataFrame,
     *,
@@ -32,6 +79,10 @@ def correlation_matrix(
 ) -> pd.DataFrame:
     """Compute the correlation matrix for a DataFrame of returns."""
     numeric_returns = _validate_returns_frame(returns)
+    if method == "kendall":
+        return _kendall_correlation_matrix(numeric_returns)
+    if min_periods is None:
+        return numeric_returns.corr(method=method)
     return numeric_returns.corr(method=method, min_periods=min_periods)
 
 
@@ -73,7 +124,10 @@ def pairwise_correlation(
 
     aligned = pd.concat([x, y], axis=1, join="inner")
     aligned = aligned.dropna()
-    correlation = aligned.iloc[:, 0].corr(aligned.iloc[:, 1], method=method)
+    if method == "kendall":
+        correlation = _kendall_tau(aligned.iloc[:, 0], aligned.iloc[:, 1])
+    else:
+        correlation = aligned.iloc[:, 0].corr(aligned.iloc[:, 1], method=method)
 
     return pd.DataFrame(
         [
@@ -114,7 +168,10 @@ def tail_correlation(
         tail_mask = numeric_returns.le(lower_threshold).any(axis=1)
         tail_mask |= numeric_returns.ge(upper_threshold).any(axis=1)
 
-    return numeric_returns.loc[tail_mask].corr(method=method, min_periods=min_periods)
+    tail_returns = numeric_returns.loc[tail_mask]
+    if min_periods is None:
+        return tail_returns.corr(method=method)
+    return tail_returns.corr(method=method, min_periods=min_periods)
 
 
 def partial_correlation(returns: pd.DataFrame) -> pd.DataFrame:
