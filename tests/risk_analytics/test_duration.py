@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from risk_factors.risk_metrics import (
+from risk_factors.risk_analytics import (
     key_rate_durations,
     macaulay_duration,
     modified_duration,

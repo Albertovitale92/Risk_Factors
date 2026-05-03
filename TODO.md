@@ -12,16 +12,16 @@
   - change-point detection
 - Keep the API explicit about the input assumptions: risk-factor shocks should be constructed before regime detection using the appropriate return convention.
 
-## Risk Metrics Modules
+## Risk Analytics Modules
 
 Implement analytics that operate on returns, exposures, or curves.
 
-### `risk_factors/risk_metrics/beta.py`
+### `risk_factors/risk_analytics/beta.py`
 
 - `compute_beta(asset_returns, benchmark_returns)`
 - `compute_multi_beta(returns_df, benchmark_returns)`
 
-### `risk_factors/risk_metrics/duration.py`
+### `risk_factors/risk_analytics/duration.py`
 
 - `macaulay_duration(cashflows, yields)`
 - `modified_duration(cashflows, yields)`
@@ -43,12 +43,13 @@ The upgraded function should compute:
 KRD_i = - (P_shocked_i - P_base) / (P_base * shock_i)
 ```
 
-### `risk_factors/risk_metrics/fx_exposure.py`
+### `risk_factors/risk_analytics/fx_exposure.py`
 
-- `compute_fx_exposure(positions, fx_rates)`
-- `portfolio_fx_sensitivity(positions, fx_returns)`
+- `compute_fx_exposure(positions, fx_rates, base_currency)`
+- `portfolio_fx_sensitivity(positions, fx_rates, base_currency, shock_size=0.0001)`
+- `portfolio_fx_scenario_pnl(positions, fx_rates, base_currency, fx_returns)`
 
-### `risk_factors/risk_metrics/factor_model.py`
+### `risk_factors/risk_analytics/factor_model.py`
 
 - `ols_factor_exposures(returns, factors)`
 - `pca_factors(returns)`
@@ -86,3 +87,9 @@ Build yield curves from raw market instruments. Support:
 - Review and harden the implemented transformations, utility helpers, public API, and local data store.
 - Check edge cases, naming consistency, docstrings, and API ergonomics before treating them as stable.
 - Expand test coverage around real market-data quirks after the core implementation is reviewed.
+
+## Risk Metrics Improvements
+
+- Implement cascade formulas for risk aggregation across longer horizons, including different liquidity assumptions by risk factor, asset, or portfolio sleeve.
+- Add robust metrics for non-normal risk-factor and P&L distributions, including skew, kurtosis, fat tails, tail dependence, and distribution-aware VaR/ES diagnostics.
+- Study how mean reversion and momentum affect longer-horizon VaR, especially how the 95th and 99th percentiles of the P&L distribution scale with time.

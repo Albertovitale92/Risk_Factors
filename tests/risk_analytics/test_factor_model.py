@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from risk_factors.risk_metrics import (
+from risk_factors.risk_analytics import (
     factor_risk_contribution,
     ols_factor_exposures,
     pca_factors,

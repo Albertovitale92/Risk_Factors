@@ -16,9 +16,13 @@ Risk_Factors/
 │   ├── curves/
 │   │   ├── __init__.py
 │   │   └── builders.py
-│   ├── risk_metrics/
+│   ├── risk_analytics/
 │   │   ├── __init__.py
 │   │   └── calculations.py
+│   ├── risk_metrics/
+│   │   ├── __init__.py
+│   │   ├── expected_shortfall.py
+│   │   └── var.py
 │   ├── utils/
 │   │   ├── __init__.py
 │   │   └── helpers.py
@@ -39,9 +43,13 @@ Risk_Factors/
     ├── curves/
     │   ├── __init__.py
     │   └── test_builders.py
-    ├── risk_metrics/
+    ├── risk_analytics/
     │   ├── __init__.py
     │   └── test_calculations.py
+    ├── risk_metrics/
+    │   ├── __init__.py
+    │   ├── test_expected_shortfall.py
+    │   └── test_var.py
     ├── utils/
     │   ├── __init__.py
     │   └── test_helpers.py

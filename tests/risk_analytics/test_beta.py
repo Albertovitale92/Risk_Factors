@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from risk_factors.risk_metrics import compute_beta, compute_multi_beta
+from risk_factors.risk_analytics import compute_beta, compute_multi_beta
 
 
 def test_compute_beta_against_benchmark():

@@ -1,2 +1,1 @@
-"""Tests for risk metric components."""
-
+"""Tests for portfolio risk metrics."""
