@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "risk_factors"
+version = "0.1.0"
+description = "Reusable library for market data, transformations, curves, and risk metrics."
+authors = [
+    { name = "Alberto Carlo Vitale" }
+]
+dependencies = []
+
+[tool.setuptools]
+packages = ["risk_factors"]
