@@ -15,8 +15,10 @@ from risk_factors.transformations.correlations import (
 )
 from risk_factors.transformations.returns import (
     abs_return,
+    abs_returns,
     cumulative_return,
     log_return,
+    log_returns,
     rel_returns,
 )
 from risk_factors.transformations.rolling import (
@@ -27,12 +29,14 @@ from risk_factors.transformations.rolling import (
 
 __all__ = [
     "abs_return",
+    "abs_returns",
     "align_time_series",
     "align_to_common_index",
     "correlation_matrix",
     "cumulative_return",
     "kendall_correlation",
     "log_return",
+    "log_returns",
     "pairwise_correlation",
     "partial_correlation",
     "pearson_correlation",
