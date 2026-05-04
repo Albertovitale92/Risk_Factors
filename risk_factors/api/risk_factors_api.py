@@ -20,6 +20,7 @@ from risk_factors.data_fetching.interest_rates_fetcher import (
     fetch_ecb_series,
     fetch_fred_series,
 )
+from risk_factors.curves import bootstrap_ecb_ois_zero_curve
 from risk_factors.transformations import (
     abs_return,
     correlation_matrix,
@@ -175,6 +176,23 @@ def get_rates_curve(curve_name: str, date) -> pd.DataFrame:
         return curve[["curve", "curve_point", "tenor", "date", "value"]]
 
     raise ValueError("curve_name must be one of 'usd_treasury', 'eur_aaa', or 'ecb_ois'")
+
+
+def get_ecb_ois_zero_curve(date, *, mode: str = "par") -> pd.DataFrame:
+    """Fetch the ECB MMSR OIS curve for a date and build an approximate zero curve."""
+    ois_curve = get_rates_curve("ecb_ois", date)
+    if ois_curve.empty:
+        return pd.DataFrame(
+            columns=[
+                "tenor",
+                "maturity_years",
+                "par_rate",
+                "discount_factor",
+                "zero_rate_continuous",
+                "zero_rate_annual",
+            ]
+        )
+    return bootstrap_ecb_ois_zero_curve(ois_curve, mode=mode)
 
 
 def get_credit_spreads(issuers, start, end) -> pd.DataFrame:
